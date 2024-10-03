@@ -1,19 +1,24 @@
-import React, { useContext } from 'react'
-import FeaturedProduct from '../Components/FeaturedProduct'
-import Slider from '../Components/Slider'
-import { CartData } from '../Context/ContextProvider'
+
+import React, { useContext, useEffect, useState } from 'react';
+import FeaturedProduct from '../Components/FeaturedProduct';
+import { CartData } from '../Context/ContextProvider';
+import Slider from '../Components/Slider';
+import { useLoaderData } from 'react-router-dom';
 
 const Home = () => {
-    const {cart}=useContext(CartData)
-    console.log(cart,"cartatata");
-    
+  const { cart, setCart } = useContext(CartData);
+  const {products}=useLoaderData()
+
+
+
   return (
-   <>
-   
-   <Slider/>
-   <FeaturedProduct Cart={cart}/>
-   </>
-  )
+    <>
+    <Slider/>
+    <div className='mt-5'>
+      <FeaturedProduct products={products} cart={cart} setCart={setCart} />
+      </div>
+    </>
+  );
 }
 
-export default Home
+export default Home;

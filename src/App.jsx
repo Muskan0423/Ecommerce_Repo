@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import './App.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import HomeWrapper from './Wrappers/HomeWrapper';
@@ -7,19 +6,31 @@ import Products from './Pages/Products';
 import Blog from './Pages/Blog';
 import Cart from './Pages/Cart';
 import { CartContextProvider } from './Context/ContextProvider';
+import BlogWrapper from './Wrappers/BlogWrapper';
+import SingleBlog from './Pages/SingleBlog';
 
+const fetchApi = async () => {
+  const url = "https://jsonplaceholder.typicode.com/posts"; 
+  const response = await fetch(url);
+  if (!response.ok) throw new Response('Failed to fetch posts', { status: 500 });
+  const data = await response.json();
+  return data; 
+};
+const fetchAllProducts = async () => {
+  const url = "https://fakestoreapi.in/api/products"; 
+  const response = await fetch(url);
+  if (!response.ok) throw new Response('Failed to fetch posts', { status: 500 });
+  const data = await response.json();
+  return data.products; 
+};
+const fetchHome = async () => {
+  const url = "https://fakestoreapi.in/api/products?limit=4"; 
+  const response = await fetch(url);
+  if (!response.ok) throw new Response('Failed to fetch posts', { status: 500 });
+  const data = await response.json();
+  return data; 
+};
 function App() {
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch("https://fakestoreapi.in/api/products?limit=4");
-      const data = await response.json();
-      return data.products; 
-    } catch (error) {
-      console.error(error);
-      throw new Response("Failed to load products", { status: 500 }); 
-    }
-  };
-
   const router = createBrowserRouter([
     {
       path: "/",
@@ -28,15 +39,27 @@ function App() {
         {
           index: true,
           element: <Home />,
-          loader: fetchProducts, 
+          loader:fetchHome
         },
         {
           path: "/products",
           element: <Products />,
+          loader:fetchAllProducts
         },
         {
           path: "/blogs",
-          element: <Blog />,
+          element: <BlogWrapper />,
+          children: [
+            {
+              index: true,
+              element: <Blog />,
+              loader: fetchApi, 
+            },
+            {
+              path: ":id",
+              element: <SingleBlog />
+            }
+          ]
         },
         {
           path: "/cart",
